@@ -1,3 +1,5 @@
+/* global respoke: true, App: true */
+
 (function (respoke, App) {
     'use strict';
 
@@ -25,4 +27,4 @@ console.log('Loading Client.js')
         return client;
     };
 
-}(null, App));
+}(respoke, App));

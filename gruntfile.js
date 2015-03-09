@@ -1,8 +1,17 @@
+/* jshint node: true */
 'use strict';
 var path = require('path'),
     _ = require('underscore');
 
 module.exports = function (grunt) {
+
+    grunt.loadNpmTasks('grunt-injector');
+    grunt.loadNpmTasks('grunt-express');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-browser-sync');
+    grunt.loadNpmTasks('grunt-jscs');
+    grunt.loadNpmTasks('grunt-contrib-stylus');
+    grunt.loadNpmTasks('grunt-autoprefixer');
 
     var files = [
         'app/js/app.js',
@@ -17,7 +26,7 @@ module.exports = function (grunt) {
         stylus: {
             compile: {
                 files: {
-                    'app/css/tictactoe.css': 'app/css/tictactoe.styl',
+                    'app/css/tictactoe.css': 'app/css/tictactoe.styl'
                 }
             }
         },
@@ -39,20 +48,6 @@ module.exports = function (grunt) {
 //                ignores: ['app/js/transporter/**/*.js']
 //            }
 //        },
-
-        mocha: {
-            all: {
-                options: {
-                    log: true,
-                    threshhold: 90,
-                    timeout: 5000,
-                    urls: [
-                        'http://localhost:5678/test/index.html'
-                    ]
-                }
-            }
-        },
-
         watch: {
             options: {
                 livereload: process.env.LIVERELOAD || 1338
@@ -64,7 +59,7 @@ module.exports = function (grunt) {
                     'app/modules/**/*.js',
                     '!app/js/transporter/**/*.js'
                 ],
-                tasks: ['test', 'injector', 'jscs']
+                tasks: ['injector']
             },
 //            templates: {
 //                files: [
@@ -137,21 +132,7 @@ module.exports = function (grunt) {
         }
 
     });
-
-    grunt.loadNpmTasks('grunt-injector');
-    grunt.loadNpmTasks('grunt-express');
-    grunt.loadNpmTasks('grunt-mocha');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-browser-sync');
-    grunt.loadNpmTasks('grunt-jscs');
-    grunt.loadNpmTasks('grunt-contrib-stylus');
-    grunt.loadNpmTasks('grunt-autoprefixer');
-    grunt.loadNpmTasks('grunt-gh-pages');
-
     grunt.registerTask('server', ['injector', 'express', 'browserSync', 'watch']);
-    grunt.registerTask('test', ['express', 'mocha']);
     grunt.registerTask('build', ['stylus', 'autoprefixer', 'injector']);
-    grunt.registerTask('publish', ['build', 'gh-pages']);
     grunt.registerTask('default', ['build']);
-
 };
