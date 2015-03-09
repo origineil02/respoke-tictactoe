@@ -31,7 +31,7 @@
    <br/>
    <div style='width: 100%'>
    <!-- ko if: user.connected -->
-      <button type='button' data-bind="click: service.disconnect">Leave</button>
+      <button type='button' data-selenium-hook="logout" data-bind="click: service.disconnect">Leave</button>
     <!-- /ko -->
    </div>
     <div style='float:left; '>
