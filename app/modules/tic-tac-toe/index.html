@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic Tac Toe</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <link rel="stylesheet" href="../../css/tictactoe.css">
+    </head>
+    <body>
+        <script src='http://knockoutjs.com/downloads/knockout-3.0.0.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.js'></script>
+        <script src="https://cdn.respoke.io/respoke.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mootools/1.5.1/mootools-core-full-compat.js"></script>
+
+        <script type="text/html" id="video-template">
+      <div data-bind='ifnot: videoController.activeCall, click: $root.videoController.call'>
+        <button title='Request video connection' class='large-tile videoRequest' ></button>
+      </div>
+       <div  data-bind="if: videoController.activeCall()">
+        <div class='large-tile'>
+        <button data-bind='click: $root.videoController.hangup'>Hang up</button>
+      
+         <div id="remoteVideoSource"></div>
+         <div id="localVideoSource"></div>
+       </div>
+       </div>
+  </script>
+    
+<script type="text/html" id="lobby-template">
+    <h2 data-bind='text: "Welcome, " + user.id()'></h2>
+   <br/>
+   <div style='width: 100%'>
+   <!-- ko if: user.connected -->
+      <button type='button' data-bind="click: service.disconnect">Leave</button>
+    <!-- /ko -->
+   </div>
+    <div style='float:left; '>
+    <table data-bind='foreach: lobby.members'>
+       <tr data-bind='ifnot: $root.user.id() == endpointId'>
+           <td class='clickable tile' data-bind='text: endpointId, click: function(){$root.invite($root, endpointId)}  '>
+           </td>
+       </tr>
+    </table>
+    </div>
+    <div style='float:left'>
+    <ul style='list-style-type: none' data-bind='foreach: user.openInvitations'>
+        <li>
+                <h5 data-bind="text: 'Invitation from ' + endpointId() "></h5>
+                <table>
+                 <tr> 
+                   <td>
+                    <div style='float: left'class='clickable accept' data-bind='click: function(){$root.user.acceptInvitation($root, $data)}'></div>
+                   </td>
+                   <td>
+                    <div style='clear: left'class='clickable decline' data-bind='click: function(){$root.user.declineInvitation($root, $data)}'></div>
+                   </td>
+                  </tr>
+                </table>    
+                </li>
+    </ul>
+    </div>
+</script>
+
+<script type="text/html" id="connected-template">   
+    <div data-bind="template: { name: user.opponent() ? 'inprogress-template' : 'lobby-template', data: $data}"></div>
+</script>
+
+
+    
+<script type="text/html" id="inprogress-template">
+    <fieldset style='border-radius: 5px'><legend>Tic Tac Toe</legend>
+        <button data-bind='click: $root.quit'>Quit</button>
+            <table>
+                <tr>
+                    <td>
+                        <div data-bind='if: isGameOver'>
+                          <button data-bind="click:$root.exitGame">Back to lobby</button>
+                          <div data-bind="template: { name: winner() ? 'win-template' : 'lost-template', data: $data}"></div>
+                        </div>
+                        <div data-bind='ifnot: isGameOver'>
+                          <div data-bind='if: !$root.user.isMyTurn()'>Awaiting opponent move...</div>
+                          <table  data-bind='foreach: board'>
+                           <tr  data-bind='foreach: $data'>
+                             <td>
+                                 <button class='tile' data-bind='disable: value() || !$root.user.isMyTurn() ,
+                                            click: function(){$root.move($root, $data)}, 
+                                            css: { clickable: !value() && $root.user.isMyTurn(), available: !value() && $root.user.isMyTurn(), xToken: value() == "X", oToken: value() == "O"}'>
+                                 </button>                          
+                             </td>
+                            </tr>
+                          </table>
+                        </div>
+                    </td>
+                    <td style='padding-left: 15px'>
+                        <div data-bind="template: {name: 'video-template', data: $data}"></div>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+</script>
+<script type="text/html" id="lost-template">
+   <img src='data:image/jpeg;base64,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OSm1kzKD6aRs8LsL2HR0Ec7SOcFa3pW9fDZrasWjaU14zH/ZWe8P6KB/Hx9SLwkepxmP+ys94fCn8fH1fo4OPU4zHfZWe8PhT+Pj6v0cJHqxVOcd0jHR/JmjGxzL+EOjECL9XpWa6CImJ8TMaWInfdBgbjeNF2pWCWm9FnIlYxrJIWTPaLjJiLS70kAa1AtoKzO8TsiW0lZn4S/azORK9jmRwsie4XCTEXYfSARrSugrE7zO5XSVifjKDucSSSSSTeSdZJ51PS34glxtw75J8h4Bt3yf5Njxm+7BgxXXfjcofBx7zx7/AD3RuHjx+Lf5oipiSICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIP/2Q=='></img>
+</script>
+
+<script type="text/html" id="win-template">
+  <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCdPeKVbjWfG1Nvc4tIJh5LNXeAMhpsO5ICaGiFPA0B8_VSIZd'></img>
+</script>
+
+<script type="text/html" id="disconnected-template">
+  <h3 id="status">Not Connected</h3>
+    <div id="login">
+      User Name:
+      <input   type="text" data-bind='value: user.id'/>
+      <button type='button' data-bind="click: service.connect, text: 'Connect'" />
+    </div>
+</script>
+
+        <div data-bind="template: { name: user.connected() ? 'connected-template' : 'disconnected-template', data: $data }"></div>   
+   
+    <!-- injector:js -->
+    <script src="../../js/app.js"></script>
+    <script src="../../js/models/Client.js"></script>
+    <script src="ui.js"></script>
+    <!-- endinjector -->
+
+     
+    </body>
+</html>
