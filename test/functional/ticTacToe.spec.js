@@ -7,13 +7,16 @@ var server = require('../../server/server');
 var async = require('async')
 var assert = require('assert')
 var closeBrowsers = true;
-var environment = 'local';
+var environment = process.env.TESTENV;
+var url;
 
 function getBrowser() {
     var options;
     if (environment === 'local') {
         options = { browserName: 'chrome' };
+        url = 'http://localhost:5678/modules/tic-tac-toe/index.html'
     } else if (environment === 'browserstack') {
+        url = 'http://origineil02.github.io/respoke-tictactoe/app/modules/tic-tac-toe/index.html'
         options = {
             host: 'hub.browserstack.com',
             port: 80,
@@ -26,7 +29,9 @@ function getBrowser() {
                 os: 'OS X',
                 os_version: 'Mavericks',
                 resolution: '1280x1024',
-                args: [ 'incognito' ]
+                args: [ 'incognito' ],
+                'browserstack.debug': true,
+                'browserstack.selenium_version': '2.43.1'
             }            
         };
     }
@@ -67,7 +72,7 @@ describe("tic tac toe", function () {
     describe("upon login", function () {
 
         it("shows logout button", function (done) {
-            client.url('http://localhost:5678/modules/tic-tac-toe/index.html')
+            client.url(url)
                     .setValue('div#login input', 'bob')
                     .click('div#login button')
                     .waitForExist('button[data-selenium-hook="logout"]', 2 * 1000, done);
@@ -83,13 +88,13 @@ describe("tic tac toe", function () {
 
                 async.parallel([
                     function (next) {
-                        client.url('http://localhost:5678/modules/tic-tac-toe/index.html')
+                        client.url(url)
                           .setValue('div#login input', 'client')
                           .click('div#login button')
                           .waitForExist('button[data-selenium-hook="logout"]', 2 * 1000, next);
                         },
                     function (next) {
-                        opponent.url('http://localhost:5678/modules/tic-tac-toe/index.html')
+                        opponent.url(url)
                             .setValue('div#login input', 'opponent')
                             .click('div#login button')
                             .waitForExist('button[data-selenium-hook="logout"]', 2 * 1000, next);
@@ -127,13 +132,13 @@ describe("tic tac toe", function () {
 
                 async.parallel([
                     function (next) {
-                        client.url('http://localhost:5678/modules/tic-tac-toe/index.html')
+                        client.url(url)
                           .setValue('div#login input', 'client')
                           .click('div#login button')
                           .waitForExist('button[data-selenium-hook="logout"]', 2 * 1000, next);
                         },
                     function (next) {
-                        opponent.url('http://localhost:5678/modules/tic-tac-toe/index.html')
+                        opponent.url(url)
                             .setValue('div#login input', 'opponent')
                             .click('div#login button')
                             .waitForExist('button[data-selenium-hook="logout"]', 2 * 1000, next);
@@ -146,8 +151,8 @@ describe("tic tac toe", function () {
                     
                     client.waitForExist('//td[contains(text(), "opponent")]', 2000).click('//td[contains(text(), "opponent")]', function(){
                         opponent.waitForExist('div[data-selenium-hook="accept-invitation-client"]', 2000).click('div[data-selenium-hook="accept-invitation-client"]', function(){
-                            client.waitForExist('table[data-selenium-hook="game-board-opponent"]', 2000, function () {
-                                opponent.waitForExist('table[data-selenium-hook="game-board-opponent"]', 2000, done);
+                            client.waitForExist('table[data-selenium-hook="game-board-opponent"]', 6000, function () {
+                                opponent.waitForExist('table[data-selenium-hook="game-board-opponent"]', 6000, done);
                             });                   
                         })
                     });                    
