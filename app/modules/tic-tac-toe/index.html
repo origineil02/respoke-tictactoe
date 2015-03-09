@@ -43,13 +43,13 @@
     </table>
     </div>
     <div style='float:left'>
-    <ul style='list-style-type: none' data-bind='foreach: user.openInvitations'>
+    <ul style='list-style-type: none' data-selenium-hook="invitations" data-bind='foreach: user.openInvitations'>
         <li>
                 <h5 data-bind="text: 'Invitation from ' + endpointId() "></h5>
                 <table>
                  <tr> 
                    <td>
-                    <div style='float: left'class='clickable accept' data-bind='click: function(){$root.user.acceptInvitation($root, $data)}'></div>
+                    <div style='float: left'class='clickable accept' data-bind='click: function(){$root.user.acceptInvitation($root, $data)}, attr:{"data-selenium-hook": "accept-invitation-"+endpointId()}'></div>
                    </td>
                    <td>
                     <div style='clear: left'class='clickable decline' data-bind='click: function(){$root.user.declineInvitation($root, $data)}'></div>
@@ -69,8 +69,8 @@
     
 <script type="text/html" id="inprogress-template">
     <fieldset style='border-radius: 5px'><legend>Tic Tac Toe</legend>
-        <button data-bind='click: $root.quit'>Quit</button>
-            <table>
+        <button data-selenium-hook='quit-button' data-bind='click: $root.quit'>Quit</button>
+            <table data-bind="attr:{'data-selenium-hook': 'game-board-'+$data.user.id() }">
                 <tr>
                     <td>
                         <div data-bind='if: isGameOver'>
