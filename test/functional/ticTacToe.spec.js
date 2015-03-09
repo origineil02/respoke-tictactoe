@@ -22,7 +22,6 @@ function getBrowser() {
             port: 80,
             user: process.env.BROWSERSTACK_USERNAME,
             key: process.env.BROWSERSTACK_ACCESS_KEY,
-            logLevel: 'silent',
             desiredCapabilities: {
                 browser: 'chrome',
                 browser_version: '38.0',
