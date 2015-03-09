@@ -7,7 +7,7 @@ var server = require('../../server/server');
 var async = require('async')
 var assert = require('assert')
 var closeBrowsers = true;
-var environment = process.env.TESTENV;
+var environment = process.env.TESTENV || 'local';
 var url;
 
 function getBrowser() {
