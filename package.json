@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "grunt test",
+    "selenium-server": "webdriver-manager update && webdriver-manager start",
     "install": "npm install -g bower && bower install"
   },
   "authors": [
@@ -31,6 +32,7 @@
     "grunt-contrib-stylus": "^0.19.0",
     "grunt-injector": "^0.6.0",
     "grunt-jscs": "~0.7.1",
-    "jshint": "^2.6.3"
+    "jshint": "^2.6.3",
+    "webdriver-manager": "^2.0.0"
   }
 }
