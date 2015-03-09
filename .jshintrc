@@ -1,0 +1,16 @@
+{
+  "browser": true,
+  "devel": true,
+  "latedef": true,
+  "undef": true,
+  "asi": true,
+  "unused": true,
+  "mocha": true,
+  "predef": [
+    "-Promise"
+  ],
+  "globals": {
+    "xit": true,
+    "xdescribe": true
+  }
+}
